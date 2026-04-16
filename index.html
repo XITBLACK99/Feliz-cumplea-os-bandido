@@ -98,7 +98,7 @@
 </head>
 <body>
 
-    <audio id="bgMusic" src="luisinfiel.mp3" preload="auto"></audio>
+    <audio id="bgMusic" src="luisinfiel.mp3" preload="auto" loop></audio>
 
     <canvas id="canvas"></canvas>
 
@@ -137,7 +137,7 @@
         function abrirTodo() {
             if(active) return;
             
-            // Iniciar música de Luis Infiel
+            // Iniciar música infinita al abrir el sobre
             music.play().catch(e => console.log("Interacción necesaria para audio"));
 
             document.body.classList.add('open-envelope');
@@ -149,7 +149,6 @@
                 content.style.display = 'block';
                 setTimeout(() => content.style.opacity = '1', 50);
                 active = true;
-                // Iniciar efectos visuales automáticos
                 for(let i=0; i<40; i++) rainItems.push(new RainItem());
                 loop();
             }, 800);
