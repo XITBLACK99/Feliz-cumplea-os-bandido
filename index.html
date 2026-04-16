@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para mi Real Ángel 👑</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Monoton&family=Special+Elite&family=Montserrat:wght@900&display=swap');
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; background: #000;
+            font-family: 'Montserrat', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        canvas { position: absolute; top: 0; left: 0; z-index: 1; pointer-events: none; }
+
+        /* --- ESTILO DEL SOBRE --- */
+        #envelope-scene {
+            position: relative; z-index: 20; 
+            perspective: 1200px;
+            transition: all 0.8s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+        }
+
+        .envelope {
+            width: 320px; height: 210px;
+            background: linear-gradient(135deg, #d4a76a 0%, #b88a4d 100%);
+            position: relative; border-radius: 8px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9);
+            cursor: pointer; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            transform-style: preserve-3d;
+        }
+
+        .flap {
+            position: absolute; top: 0; width: 0; height: 0;
+            border-left: 160px solid transparent; border-right: 160px solid transparent;
+            border-top: 110px solid #c2945d;
+            transform-origin: top; transition: 0.6s ease; z-index: 5;
+        }
+
+        .stamp {
+            background: #b00; color: #fff; font-family: 'Special Elite';
+            padding: 10px 20px; transform: rotate(-8deg);
+            border: 2px solid #fff; font-size: 1.1rem;
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.5);
+            z-index: 4;
+        }
+
+        .confidencial-text {
+            margin-top: 25px; color: #321; font-size: 0.75rem;
+            letter-spacing: 3px; font-weight: bold; font-family: 'Special Elite';
+        }
+
+        /* --- ANIMACIÓN APERTURA --- */
+        .open-envelope .flap { transform: rotateX(180deg); }
+        .open-envelope #envelope-scene { 
+            transform: scale(0) translateY(-100vh) rotate(20deg); 
+            opacity: 0; pointer-events: none;
+        }
+
+        /* --- INTERFAZ DE FIESTA --- */
+        #content {
+            position: absolute; z-index: 10; text-align: center;
+            display: none; opacity: 0; transition: 1.5s; width: 90%;
+        }
+
+        h1 {
+            font-family: 'Monoton', cursive; font-size: clamp(2.5rem, 8vw, 5rem);
+            background: linear-gradient(to bottom, #fff 20%, #ff0055 80%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(255,0,85,0.8));
+            margin: 0;
+        }
+
+        .angel-box {
+            margin-top: 20px; padding: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px; border: 1px solid rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .angel-text {
+            font-family: 'Special Elite'; color: #ffd700;
+            font-size: 1.25rem; line-height: 1.6;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+        }
+
+        .hint {
+            position: absolute; bottom: 40px; color: #fff;
+            font-size: 0.7rem; letter-spacing: 5px; opacity: 0.5;
+            text-align: center; width: 100%; z-index: 30;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" src="luisinfiel.mp3" preload="auto" loop></audio>
+
+    <canvas id="canvas"></canvas>
+
+    <div id="envelope-scene" onclick="abrirTodo()">
+        <div class="envelope">
+            <div class="flap"></div>
+            <div class="stamp">PARA EL MÁS INFIEL 🥷</div>
+            <div class="confidencial-text">SOLO PARA MI REAL ÁNGEL</div>
+        </div>
+    </div>
+
+    <div id="content">
+        <h1>FELIZ CUMPLE</h1>
+        <div class="angel-box">
+            <div class="angel-text">
+                Feliz cumpleaños al único bandido que tiene pase VIP en el cielo porque su brother reza por él todos los días. ¡Ya suéltale al desmadre, infiel! <br><br> 
+                <strong>Ángel 🥂🔥💵</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="hint" id="instruccion">HAZ CLIC PARA ABRIR EL SOBRE</div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const music = document.getElementById('bgMusic');
+        let w, h, fireworks = [], particles = [], rainItems = [], active = false;
+
+        const rainEmojis = ['💵', '💸', '🥷', '🥃', '🍾', '💰', '🎲', '👑'];
+
+        function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function abrirTodo() {
+            if(active) return;
+            
+            // Iniciar música infinita al abrir el sobre
+            music.play().catch(e => console.log("Interacción necesaria para audio"));
+
+            document.body.classList.add('open-envelope');
+            document.getElementById('instruccion').innerHTML = "TOCA PARA LANZAR MÁS 🥂💰";
+            
+            setTimeout(() => {
+                document.getElementById('envelope-scene').style.display = 'none';
+                const content = document.getElementById('content');
+                content.style.display = 'block';
+                setTimeout(() => content.style.opacity = '1', 50);
+                active = true;
+                for(let i=0; i<40; i++) rainItems.push(new RainItem());
+                loop();
+            }, 800);
+        }
+
+        class RainItem {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * w;
+                this.y = -50 - (Math.random() * h);
+                this.emoji = rainEmojis[Math.floor(Math.random() * rainEmojis.length)];
+                this.size = Math.random() * 20 + 20;
+                this.speed = Math.random() * 2 + 2;
+                this.rot = Math.random() * 360;
+            }
+            update() {
+                this.y += this.speed; this.rot += 1;
+                if (this.y > h + 50) this.reset();
+            }
+            draw() {
+                ctx.save(); ctx.translate(this.x, this.y);
+                ctx.rotate(this.rot * Math.PI / 180);
+                ctx.font = `${this.size}px Arial`;
+                ctx.fillText(this.emoji, 0, 0); ctx.restore();
+            }
+        }
+
+        class Firework {
+            constructor(targetX, targetY) {
+                this.x = Math.random() * w; this.y = h;
+                this.tx = targetX || Math.random() * w;
+                this.ty = targetY || Math.random() * (h * 0.5);
+                this.speed = 5;
+                this.angle = Math.atan2(this.ty - this.y, this.tx - this.x);
+                this.hue = Math.random() * 360;
+            }
+            update() {
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed;
+                if (Math.abs(this.y - this.ty) < 5) {
+                    for(let i=0; i<50; i++) particles.push(new Particle(this.x, this.y, this.hue));
+                    return false;
+                }
+                return true;
+            }
+            draw() {
+                ctx.beginPath(); ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = `hsl(${this.hue}, 100%, 60%)`; ctx.fill();
+            }
+        }
+
+        class Particle {
+            constructor(x, y, hue) {
+                this.x = x; this.y = y;
+                this.hue = hue + (Math.random() * 40 - 20);
+                this.a = 1; this.decay = Math.random() * 0.015 + 0.01;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 6 + 2;
+                this.v = { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed };
+            }
+            update() {
+                this.v.x *= 0.96; this.v.y *= 0.96; this.v.y += 0.12;
+                this.x += this.v.x; this.y += this.v.y; this.a -= this.decay;
+            }
+            draw() {
+                ctx.save(); ctx.globalAlpha = this.a; ctx.beginPath();
+                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                ctx.fillStyle = `hsl(${this.hue}, 100%, 60%)`;
+                ctx.shadowBlur = 12; ctx.shadowColor = ctx.fillStyle; ctx.fill(); ctx.restore();
+            }
+        }
+
+        function loop() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.fillRect(0, 0, w, h);
+            rainItems.forEach(item => { item.update(); item.draw(); });
+            if (Math.random() < 0.05) fireworks.push(new Firework());
+            fireworks = fireworks.filter(f => { if (f.update()) { f.draw(); return true; } return false; });
+            particles = particles.filter(p => { if (p.a > 0) { p.update(); p.draw(); return true; } return false; });
+            requestAnimationFrame(loop);
+        }
+
+        const handleInteraction = (e) => {
+            if (!active) return;
+            const x = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+            const y = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+            fireworks.push(new Firework(x, y));
+        };
+        window.addEventListener('mousedown', handleInteraction);
+        window.addEventListener('touchstart', handleInteraction);
+    </script>
+</body>
+</html>
